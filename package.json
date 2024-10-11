@@ -1,0 +1,15 @@
+{
+  "name": "react-ssr-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:client": "esbuild src/client.jsx --bundle --minify --outfile=dist/client.js",
+    "build:renderPost": "esbuild src/renderPost.jsx --bundle --platform=node --format=esm --external:react --external:react-dom --outfile=dist/renderPost.js",
+    "build": "npm run build:client && npm run build:renderPost"
+  },
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

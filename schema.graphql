@@ -1,0 +1,6 @@
+type Post @table @export {
+    id: ID @primaryKey
+    title: String
+    content: String
+    comments: [String]
+}
