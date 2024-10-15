@@ -43,14 +43,29 @@ function Post({ post }) {
     }).then(() => console.log("Comment written to database!"));
   };
 
+  const deleteComment = (index) => {
+    const newComments = comments.filter((_, i) => i !== index);
+    setComments(newComments);
+    fetch(window.location.pathname, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ comments: newComments }),
+    }).then(() => console.log("Comment deleted from database!"));
+  };
+
   return (
     <div>
       <p>{post.title}</p>
-      <p>{post.content}</p>
+      <p>{post.body}</p>
       {comments && comments.length > 0 ? (
         <ul>
           {comments.map((comment, index) => (
-            <li key={index}>{comment}</li>
+            <li key={index}>
+              {comment}
+              <button onClick={() => deleteComment(index)}>Delete</button>
+            </li>
           ))}
         </ul>
       ) : (

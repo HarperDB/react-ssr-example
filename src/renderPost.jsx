@@ -14,7 +14,7 @@ export function renderPost(post) {
 <body>
 	<script>window.__INITIAL_DATA__=${JSON.stringify(post)}</script>
 	<div id="root">${renderToString(<App post={post} />)}</div>
-	<script type="module" src="client.js"></script>
+	<script type="module" src="/client.js"></script>
 </body>
 </html>
   `;
