@@ -30,9 +30,7 @@ class PageBuilder extends tables.Post {
 tables.BlogCache.sourcedFrom(PageBuilder);
 
 export class CachedBlog extends tables.BlogCache {
-	async get(query) {
-		console.log(this.wasLoadedFromSource());
-		console.log(this.content);
+	async get() {
 		return {
 			contentType: 'text/html',
 			data: this.content
