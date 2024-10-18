@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function CommentInput({ addComment }) {
   const [newComment, setNewComment] = useState("");
@@ -28,39 +28,78 @@ function CommentInput({ addComment }) {
   );
 }
 
-function Post({ post }) {
-  const [comments, setComments] = useState(post.comments);
+export default function Post({ initialPostData }) {
+  const [post, setPost] = useState(initialPostData);
+
+  useEffect(() => {
+    const ws = new WebSocket(`ws://localhost:9926/Post/${post.id}`)
+    ws.onmessage = event => {
+      const message = JSON.parse(event.data)
+      setPost(message.value);
+    }
+
+    return () => {
+      ws.close();
+    }
+  }, []);
 
   const addComment = (comment) => {
-    const newComments = [...comments, comment];
-    setComments(newComments);
+    const newPost = { ...post, comments: [...post.comments, comment] }
+
     fetch(window.location.pathname, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ comments: newComments }),
-    }).then(() => console.log("Comment written to database!"));
+      body: JSON.stringify(newPost),
+    }).then((response) => {
+      if (response.ok) {
+        console.log("Comment added!");
+      } else {
+        console.error("Error adding comment:", response.statusText);
+      }
+    }).catch((error) => {
+      console.error("Error adding comment:", error);
+    });
+  };
+
+  const deleteComment = (index) => {
+    const newPost = { ...post, comments: post.comments.filter((_, i) => i !== index) }
+
+    fetch(window.location.pathname, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPost),
+    }).then((response) => {
+      if (response.ok) {
+        console.log("Comment deleted!");
+      } else {
+        console.error("Error deleting comment:", response.statusText);
+      }
+    }).catch((error) => {
+      console.error("Error deleting comment:", error);
+    });
   };
 
   return (
-    <div>
-      <p>{post.title}</p>
-      <p>{post.content}</p>
-      {comments && comments.length > 0 ? (
+    <article>
+      <h1>{post.title}</h1>
+      <p>{post.body}</p>
+      {post.comments && post.comments.length > 0 ? (
         <ul>
-          {comments.map((comment, index) => (
-            <li key={index}>{comment}</li>
+          {post.comments.map((comment, index) => (
+            <li key={index}>
+              <span>{comment}</span>
+              <button className='delete-button' onClick={() => deleteComment(index)}>X</button>
+            </li>
           ))}
         </ul>
       ) : (
         <p>No Comments Yet!</p>
       )}
       <CommentInput addComment={addComment} />
-    </div>
+    </article>
   );
-}
-
-export default function App({ post }) {
-  return post === undefined ? <p>Post not found</p> : <Post post={post} />;
 }
