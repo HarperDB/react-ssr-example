@@ -3,13 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:client": "esbuild src/client.jsx --bundle --minify --outfile=dist/client.js",
-    "build:renderPost": "esbuild src/renderPost.jsx --bundle --platform=node --format=esm --external:react --external:react-dom --outfile=dist/renderPost.js",
-    "build": "npm run build:client && npm run build:renderPost"
+    "build:client": "vite build --ssrManifest --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
+    "build": "npm run build:client && npm run build:server"
   },
   "dependencies": {
-    "esbuild": "^0.24.0",
+    "@vitejs/plugin-react": "^4.3.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.9"
   }
 }
