@@ -9,9 +9,14 @@ It includes complete client side hydration as well, resulting in a fully interac
 1. `npm i`
 2. `npm build`
 3. `harperdb run .`
-4. Navigate to [/Blog/0](http://localhost:9926/Blog/0)
-5. Add a comment!
-6. Restart HarperDB and see the comment persist between sessions!
+4. Navigate to [/UncachedBlog/0](http://localhost:9926/UncachedBlog/0) or [/CachedBlog/0](http://localhost:9926/CachedBlog/0)
+5. Add or remove comments!
+
+The application is fully interactive and leverages a WebHook on the _Post_ to keep the page synced with the database record.
+
+Regardless of caching, the pages are server side rendered. In the caching example, it will only rerender when the _Post_ has been updated.
+
+Otherwise, clients should always receive a 304 status code!
 
 ## Help
 
@@ -26,3 +31,5 @@ curl -X PATCH http://localhost:9926/Post/0 \
 -H "Content-Type: application/json" \
 -d '{ "comments": [] }'
 ```
+
+- This repo includes a `caching-test.js` script for quickly demonstrating and validating the caching behavior. Give it a try with `node caching-test.js` (component must be running with HarperDB).
