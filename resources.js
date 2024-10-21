@@ -10,24 +10,19 @@ if (!(await tables.Post.get("0"))) {
 	});
 }
 
-const htmlPath = path.join(import.meta.dirname, 'dist/client/index.html');
-const templateHTML = fs.readFileSync(htmlPath, 'utf-8');
-const ssrManifestPath = path.join(import.meta.dirname, 'dist/client/.vite/ssr-manifest.json');
-const ssrManifest = fs.readFileSync(ssrManifestPath, 'utf-8');
+const template = fs.readFileSync(path.join(import.meta.dirname, 'dist/client/index.html'), 'utf-8');
+const serverEntry = await import('./dist/server/entry-server.js');
 
 async function renderPost(post) {
-	const render = (await import('./dist/server/entry-server.js')).render;
-
-	const rendered = render({ initialPostData: post });
-
-	const html = templateHTML
+	const rendered = serverEntry.render({ initialPostData: post });
+	
+	const html = template
 		.replace(`<!--app-head-->`, rendered.head ?? '')
 		.replace(`<!--app-html-->`, rendered.html ?? '')
 		.replace(`<!--app-data-->`, `<script>window.__INITIAL_POST_DATA__ = ${JSON.stringify(post)};</script>`);
 
 	return html;
 }
-
 
 export class UncachedBlog extends tables.Post {
 	async get() {
